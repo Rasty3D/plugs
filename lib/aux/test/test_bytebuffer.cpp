@@ -13,17 +13,16 @@ int main(int argc, char *argv[])
 	byteBuffer.write('l');
 	byteBuffer.write('l');
 	byteBuffer.write('o');
-	byteBuffer.write((unsigned char*)", World!", 8);
-
-	byteBuffer.setCursor(320);
-	byteBuffer.write('*');
+	byteBuffer.write((unsigned char*)", World!\0", 9);
 
 	size = byteBuffer.getSize();
 	buffer = byteBuffer.getBuffer();
-	buffer[size] = '\0';
 
 	std::cout << "Size  : " << size << std::endl;
 	std::cout << "Buffer: " << (char*)buffer << std::endl;
+
+	byteBuffer.clear();
+	byteBuffer.write((unsigned char*)"Blah, blah, blah\0", 17);
 
 	byteBuffer.setCursor(0);
 	while (byteBuffer.read(value))
