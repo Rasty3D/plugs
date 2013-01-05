@@ -1,3 +1,5 @@
+#include "bytebuffer.h"
+
 ByteBuffer::ByteBuffer()
 {
 	this->size = 0;
@@ -39,47 +41,61 @@ bool ByteBuffer::setCapacityStep(unsigned long step)
 
 bool ByteBuffer::write(unsigned char value)
 {
-	if (this->cursor >= this->size)
-	{
-		if (!this->resize(this->capacity + this->step))
-			return false;
-	}
+	// Resize buffer if needed
+	if (!this->resize(this->cursor + 1))
+		return false;
 
+	// Write data
 	this->buffer[this->cursor] = value;
 	this->cursor++;
+
+	// Change size if the cursor went beyond
+	if (this->size < this->cursor)
+		this->size = this->cursor;
+
 	return true;
 }
 
 bool ByteBuffer::write(unsigned char *values, unsigned long size)
 {
-	if (this->cursor >= this->size + size)
-	{
-		if (!this->resize(this->capacity + size + this->step))
-			return false;
-	}
+	// Resize buffer if needed
+	if (!this->resize(this->cursor + size))
+		return false;
 
+	// Write data
 	memcpy(&this->buffer[this->cursor], values, size);
 	this->cursor += size;
+
+	// Change size if the cursor went beyond
+	if (this->size < this->cursor)
+		this->size = this->cursor;
+
 	return true;
 }
 
 bool ByteBuffer::read(unsigned char &value)
 {
-	if (this->cursor == this->size)
+	// I cannot read beyond the size
+	if (this->cursor >= this->size)
 		return false;
 
+	// Read data
 	value = this->buffer[this->cursor];
 	this->cursor++;
+
 	return true;
 }
 
 bool ByteBuffer::read(unsigned char *values, unsigned long size)
 {
+	// I cannot read beyond the size
 	if (this->cursor >= this->size - size)
 		return false;
 
+	// Read data
 	memcpy(values, &this->buffer[this->cursor], size);
 	this->cursor += size;
+
 	return true;
 }
 
@@ -118,7 +134,7 @@ bool ByteBuffer::setCursor(unsigned long pos, int direction)
 	}
 	else	// And resize if pos is bigger than capacity
 	{
-		if (!this->resize(pos + this->step))
+		if (!this->resize(pos))
 			return false;
 
 		this->cursor = pos;
@@ -131,6 +147,7 @@ bool ByteBuffer::setCursor(unsigned long pos, int direction)
 bool ByteBuffer::setEnd()
 {
 	this->size = this->cursor;
+	return true;
 }
 
 void ByteBuffer::clear()
@@ -139,10 +156,32 @@ void ByteBuffer::clear()
 	this->cursor = 0;
 
 	if (this->capacity > 0)
-		memmemset(this->buffer, 0, this->capacity);
+		memset(this->buffer, 0, this->capacity);
 }
 
 bool ByteBuffer::resize(unsigned long size)
 {
+	unsigned long newCapacity;
 
+	// Calculate new capacity
+	if ((size % this->step) == 0)
+		newCapacity = (size / this->step) * this->step;
+	else
+		newCapacity = (size / this->step + 1) * this->step;
+
+	if (this->capacity == 0)
+	{
+		this->capacity = newCapacity;
+		this->buffer = new unsigned char[this->capacity];
+	}
+	else
+	{
+		unsigned char *newBuffer = new unsigned char[newCapacity];
+		memcpy(newBuffer, this->buffer, this->capacity);
+		delete [] this->buffer;
+		this->buffer = newBuffer;
+		this->capacity = newCapacity;
+	}
+
+	return true;
 }

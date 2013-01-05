@@ -5,5 +5,7 @@ project(cudaaux)
 include_directories(include)
 
 # Add library
-cuda_add_library(cudaaux
-  src/cudaaux.cu)
+if (CUDA_FOUND)
+  cuda_add_library(cudaaux
+    src/cudaaux.cu)
+endif (CUDA_FOUND)

@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <string.h>
+
 #define BYTEBUFFER_STEP	256
 
 #define BYTEBUFFER_BEG	-1
