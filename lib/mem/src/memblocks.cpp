@@ -166,6 +166,8 @@ void MemBlocks::init()
 	this->owner = MEMBLOCK_NO_OWNER;
 	this->bufferSize = 0;
 	this->buffer = NULL;
+	this->atlasSize = 0;
+	this->atlas = NULL;
 }
 
 // Clear the memory and reset the variables
@@ -177,4 +179,39 @@ bool MemBlocks::clear()
 	free(this->buffer, owner);
 	this->init();
 	return true;
+}
+
+
+	/* Memory Atlas management functions */
+
+// Gets the memory atlas. If it's not already generated, generates a new one
+unsigned char *MemBlocks::getMemAtlas(unsigned long &size)
+{
+	if (!this->genMemAtlas())
+	{
+		size = 0;
+		return NULL;
+	}
+
+	size = this->atlasSize;
+	return this->atlas;
+}
+
+// Loads a memory atlas
+bool MemBlocks::loadMemAtlas(unsigned char *buffer, unsigned long size)
+{
+
+
+	// TODO
+	return false;
+}
+
+// Generates the memory atlas
+bool MemBlocks::genMemAtlas()
+{
+	// Calculate maximum size
+
+
+	// TODO
+	return false;
 }

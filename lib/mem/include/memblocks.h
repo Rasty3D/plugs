@@ -58,6 +58,15 @@ private:
 	unsigned char *buffer;		//!< Buffer to store the data
 	// @}
 
+
+		/** @name Memory atlas */
+private:
+	// @{
+	unsigned long atlasSize;	//!< Size of the atlas
+	unsigned char *atlas;		//!< Buffer to store the atlas
+	// @}
+
+
 		/** @name Constructor and Destructor */
 public:
 	// @{
@@ -84,6 +93,7 @@ public:
 	bool setAlignment(unsigned int alignment);
 
 	// @}
+
 
 		/** @name Block management functions */
 public:
@@ -131,6 +141,37 @@ public:
 	 *  @return				true if ok, false otherwise
 	 */
 	bool clear();
+
+	// @}
+
+
+		/** @name Memory Atlas management functions */
+public:
+	// @{
+
+	/** Gets the memory atlas. If it's not already generated, generates
+	 *  a new one
+	 *  @param [out]	size	Size of the memory atlas. If this value is
+	 *  						zero, means that the atlas could not be
+	 *  						generated
+	 *  @return					Pointer to the memory atlas. If this value is
+	 *  						NULL, means that the atlas could not be
+	 *  						generated
+	 */
+	unsigned char *getMemAtlas(unsigned long &size);
+
+	/** Loads a memory atlas
+	 *  @param [in]	buffer	Buffer containing the memory atlas
+	 *  @param [in] size	Size of the memory atlas buffer
+	 *  @return				true if ok, false otherwise
+	 */
+	bool loadMemAtlas(unsigned char *buffer, unsigned long size);
+
+private:
+	/** Generates the memory atlas
+	 *  @return				true if ok, false otherwise
+	 */
+	bool genMemAtlas();
 
 	// @}
 };
