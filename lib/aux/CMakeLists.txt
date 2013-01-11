@@ -15,3 +15,5 @@ add_executable(test_bytebuffer
   test/test_bytebuffer.cpp)
 target_link_libraries(test_bytebuffer
   aux)
+add_test(test_bytebuffer
+  ${EXECUTABLE_OUTPUT_PATH}/test_bytebuffer)

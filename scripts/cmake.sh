@@ -13,10 +13,10 @@
 #
 #-------------------------------------------------------------------------------
 
-# Calculate the SL root folder and pass it as an option to CMake
+# Calculate the root folder and pass it as an option to CMake
 ROOT_DIR=$(pwd)/$(dirname $0)/..
 
-# Clean SL root path
+# Clean root path
 OLDIFS="$IFS"
 IFS='/'
 END=false

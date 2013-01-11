@@ -36,6 +36,10 @@ else (CUDA_FOUND)
 endif (CUDA_FOUND)
 
 
+# Enable tests
+enable_testing()
+
+
 # Set subdirectories
 add_subdirectory(lib)
 add_subdirectory(exe)
