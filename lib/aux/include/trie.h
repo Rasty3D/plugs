@@ -42,6 +42,7 @@ private:
 
 	// @}
 
+
 		/** @name Constructor and destructor */
 public:
 	// @{
@@ -53,6 +54,7 @@ public:
 	~Trie();
 
 	// @}
+
 
 		/** @name Manage elements */
 public:
@@ -88,8 +90,40 @@ public:
 	/** Clean tree */
 	void clear();
 
+	// @}
+
+
+		/** @name Other functions */
+public:
+	// @{
+
 	/** Print tree */
 	void print();
+
+	/** Print tree atlas
+	 * @param [out]	Tree depth for jumps
+	 */
+	void printAtlas(unsigned long &depth);
+
+	/** Get the size of the tree (number of elements and leafs)
+	 * @param [out]	nElements	Number of elements
+	 * @param [out]	nLeafs		Number of leafs
+	 */
+	void getSize(unsigned long &nElements, unsigned long &nLeafs);
+
+	/** Get atlas size
+	 * @return	Atlas size
+	 */
+	unsigned long getAtlasSize();
+
+	/** Get atlas
+	 * @param [out]	Buffer with the atlas
+	 * @param [out]	Position in the atlas buffer (will finish with the atlas size)
+	 * @param [out]	Tree depth for jumps
+	 * @return		true if the atlas was generated properly,
+	 * 				false otherwise
+	 */
+	bool getAtlas(char *atlas, unsigned long &pos, unsigned long &depth);
 
 	// @}
 };

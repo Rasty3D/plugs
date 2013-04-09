@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 	std::cout << "Size  : " << size << std::endl;
 	std::cout << "Buffer: " << (char*)buffer << std::endl;
 
-	byteBuffer.clear();
+	byteBuffer.reset();
 	byteBuffer.write((unsigned char*)"Blah, blah, blah\0", 17);
 
 	byteBuffer.setCursor(0);

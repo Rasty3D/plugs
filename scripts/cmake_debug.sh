@@ -49,6 +49,8 @@ done
 IFS="$OLDIFS"
 OPTIONS="-DROOT_DIR=$ROOT_DIR"
 
+# Debug
+OPTIONS="-DCMAKE_BUILD_TYPE=Debug $OPTIONS"
 
 # Launch cmake with the automatic options
 echo "Launching CMake:"

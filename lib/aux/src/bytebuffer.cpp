@@ -150,7 +150,7 @@ bool ByteBuffer::setEnd()
 	return true;
 }
 
-void ByteBuffer::clear()
+void ByteBuffer::reset()
 {
 	this->size = 0;
 	this->cursor = 0;

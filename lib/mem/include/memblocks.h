@@ -126,7 +126,7 @@ public:
 	int getOwner();
 
 	/** Allocate the memory
-	 *  @param [in] owner	Id of the owner (0 for CPU)
+	 *  @param [in] owner	Id of the owner
 	 *  @param [in] reset	If true then the memory is reset to zeros
 	 *  @return				true if ok, false otherwise
 	 */

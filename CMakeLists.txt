@@ -7,8 +7,14 @@ set(LIBRARY_OUTPUT_PATH ../../bin)
 
 
 # Compiler options
-set(CMAKE_CXX_FLAGS_RELEASE "-Wall -pedantic -O3")
-set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-Wall -pedantic -O3")
+set(CMAKE_CXX_FLAGS "-Wall -O3")
+set(CMAKE_EXE_LINKER_FLAGS "-Wall -O3")
+
+set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O3")
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-Wall -O3")
+
+set(CMAKE_CXX_FLAGS_DEBUG "-Wall -g")
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG "-Wall -g")
 
 
 # Set Doxygen

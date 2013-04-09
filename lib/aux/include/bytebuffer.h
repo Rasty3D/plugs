@@ -34,7 +34,7 @@ public:
 	unsigned long getCursor();
 	bool setCursor(unsigned long pos, int direction = BYTEBUFFER_BEG);
 	bool setEnd();
-	void clear();
+	void reset();
 
 private:
 	bool resize(unsigned long size);

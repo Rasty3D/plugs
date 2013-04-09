@@ -154,6 +154,13 @@ bool MemBlocks::allocate(int owner, bool reset)
 	if (reset)
 		memset(this->buffer, 0, this->bufferSize, owner);
 
+	// Generate memory atlas
+	if (!this->genMemAtlas())
+	{
+		this->clear();
+		return false;
+	}
+
 	return true;
 }
 
@@ -177,6 +184,10 @@ bool MemBlocks::clear()
 		return false;
 
 	free(this->buffer, owner);
+
+	if (this->atlasSize != 0)
+		delete [] this->atlas;
+
 	this->init();
 	return true;
 }
@@ -184,10 +195,10 @@ bool MemBlocks::clear()
 
 	/* Memory Atlas management functions */
 
-// Gets the memory atlas. If it's not already generated, generates a new one
+// Gets the memory atlas
 unsigned char *MemBlocks::getMemAtlas(unsigned long &size)
 {
-	if (!this->genMemAtlas())
+	if (this->atlasSize == 0 || this->atlas == NULL)
 	{
 		size = 0;
 		return NULL;
@@ -200,8 +211,6 @@ unsigned char *MemBlocks::getMemAtlas(unsigned long &size)
 // Loads a memory atlas
 bool MemBlocks::loadMemAtlas(unsigned char *buffer, unsigned long size)
 {
-
-
 	// TODO
 	return false;
 }
@@ -209,9 +218,6 @@ bool MemBlocks::loadMemAtlas(unsigned char *buffer, unsigned long size)
 // Generates the memory atlas
 bool MemBlocks::genMemAtlas()
 {
-	// Calculate maximum size
-
-
 	// TODO
 	return false;
 }

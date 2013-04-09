@@ -44,6 +44,10 @@ bool Trie::add(const char *name, void *element, bool overwrite)
 	if (element == NULL)
 		return false;
 
+	// Illegal character
+	if (name[0] < 0)
+		return false;
+
 	// Last character
 	if (name[1] == '\0')
 	{
@@ -108,7 +112,7 @@ bool Trie::add(const char *name, void *element, bool overwrite)
 
 		return this->child->add(name + 1, element, overwrite);
 	}
-	else if (this->next != NULL)	// Check next brother
+	else if (this->next != NULL)			// Check next brother
 	{
 		return this->next->add(name, element, overwrite);
 	}
@@ -124,12 +128,16 @@ bool Trie::add(const char *name, void *element, bool overwrite)
 // Get element from the current position
 void *Trie::get(const char *name)
 {
+	// Illegal character
+	if (name[0] < 0)
+		return NULL;
+
 	// Last character
 	if (name[1] == '\0')
 	{
 		if (this->character == name[0])		// Check character
 			return this->element;
-		else if (this->next != NULL)	// Check next brother
+		else if (this->next != NULL)		// Check next brother
 			return this->next->get(name);
 		else								// Element not found
 			return NULL;
@@ -138,12 +146,12 @@ void *Trie::get(const char *name)
 	// Check character
 	if (this->character == name[0])			// Check character
 	{
-		if (this->child == NULL)				// There are no more children
+		if (this->child == NULL)			// There are no more children
 			return NULL;
 		else
 			return this->child->get(name + 1);	// Look for in the child
 	}
-	else if (this->next != NULL)		// Check next brother
+	else if (this->next != NULL)			// Check next brother
 	{
 		return this->next->get(name);
 	}
@@ -156,19 +164,23 @@ void *Trie::get(const char *name)
 // Removes the reference to an element
 bool Trie::remove(const char *name)
 {
+	// Illegal character
+	if (name[0] < 0)
+		return false;
+
 	// Last character
 	if (name[1] == '\0')
 	{
-		if (this->character == '\0')	// Check character, name not found
+		if (this->character == '\0')		// Check character, name not found
 		{
 			return false;
 		}
-		else if (this->character == name[0])  // Name found -> Delete reference
+		else if (this->character == name[0]) // Name found -> Delete reference
 		{
 			this->element = NULL;
 			return true;
 		}
-		else if (this->next != NULL)	  // Check next brother
+		else if (this->next != NULL)		// Check next brother
 		{
 			return this->next->remove(name);
 		}
@@ -185,12 +197,12 @@ bool Trie::remove(const char *name)
 	}
 	else if (this->character == name[0])
 	{
-		if (this->child == NULL)					// Name not found
+		if (this->child == NULL)			// Name not found
 			return false;
 		else
 			return this->child->remove(name + 1);	// Remove from child
 	}
-	else if (this->next != NULL)		// Check next brother
+	else if (this->next != NULL)			// Check next brother
 	{
 		return this->next->remove(name);
 	}
@@ -230,4 +242,94 @@ void Trie::print()
 
 	if (this->next != NULL)
 		this->next->print();
+}
+
+// Print trie with extended information
+void Trie::printAtlas(unsigned long &depth)
+{
+	std::cout << "\'" << this->character << "\', ";
+
+	if (this->element != NULL)
+		std::cout << "NULL, ";
+
+	unsigned long depthChild = depth + 1;
+
+	if (this->child != NULL)
+		this->child->printAtlas(depthChild);
+
+	if (this->next != NULL)
+	{
+		std::cout << "-" << (depthChild - depth) << ", ";
+		this->next->printAtlas(depth);
+	}
+
+	depth = depthChild + 1;
+}
+
+
+	/* Other functions */
+
+// Get the size of the tree (number of elements and leafs)
+void Trie::getSize(unsigned long &nElements, unsigned long &nLeafs)
+{
+	if (this->element != NULL)
+		nElements++;
+
+	nLeafs++;
+
+	if (this->child != NULL)
+		this->child->getSize(nElements, nLeafs);
+
+	if (this->next != NULL)
+		this->next->getSize(nElements, nLeafs);
+}
+
+// Get atlas size
+unsigned long Trie::getAtlasSize()
+{
+	int size = 1;
+
+	if (this->element != NULL)
+		size++;
+
+	if (this->child != NULL)
+		size += this->child->getAtlasSize();
+
+	if (this->next != NULL)
+		size += this->next->getAtlasSize() + 1;
+
+	return size;
+}
+
+// Get atlas
+bool Trie::getAtlas(char *atlas, unsigned long &pos, unsigned long &depth)
+{
+	atlas[pos++] = this->character;
+
+	if (this->element != NULL)
+		atlas[pos++] = '\0';
+
+	unsigned long depthChild = depth + 1;
+
+	if (this->child != NULL)
+	{
+		if (!this->child->getAtlas(atlas, pos, depthChild))
+			return false;
+	}
+
+	if (this->next != NULL)
+	{
+		unsigned long jump = depthChild - depth;
+
+		if (jump >= 255)
+			return false;
+
+		atlas[pos++] = -jump;
+
+		if (!this->next->getAtlas(atlas, pos, depth))
+			return false;
+	}
+
+	depth = depthChild + 1;
+	return true;
 }
