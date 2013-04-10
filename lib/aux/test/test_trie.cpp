@@ -14,10 +14,15 @@ int main(int argc, char *argv[])
 
 	// Add elements
 	const int nValues = 8;
+	/*
 	int values[nValues] = {
 		   7,     3,     4,    12,  15,  11,    5,     9};
 	const char *names[nValues] = {
-		"to", "tea", "ted", "ten", "a", "i", "in", "inn"};
+		"to", "tea", "ted", "ten", "a", "i", "in", "inn"};*/
+	int values[nValues] = {
+		   7,     3,  15,     9,     4,    12,  11,    5};
+	const char *names[nValues] = {
+		"to", "tea", "a", "inn", "ted", "ten", "i", "in"};
 
 	for (int i = 0; i < nValues; i++)
 	{
@@ -31,23 +36,26 @@ int main(int argc, char *argv[])
 	std::cout << "[OK]" << std::endl;
 
 
-	std::cout << "==== GET ELEMENT ... ";
+	std::cout << "==== GET ELEMENTS ... ";
 
-	// Get element
-	int *element = (int*)trie.get("ted");
+	int *element;
 
-	if (element == NULL)
+	for (int i = 0; i < nValues; i++)
 	{
-		std::cout << "[ERROR] Error getting element" << std::endl;
-		return -1;
-	}
+		// Get elements
+		element = (int*)trie.get(names[i]);
 
-	//std::cout << "Value of element 'ted': " << (int)*element << std::endl;
+		if (element == NULL)
+		{
+			std::cout << "[ERROR] Error getting element" << std::endl;
+			return -1;
+		}
 
-	if (*element != 4)
-	{
-		std::cout << "[ERROR] Wrong element value" << std::endl;
-		return -1;
+		if (*element != values[i])
+		{
+			std::cout << "[ERROR] Wrong element value" << std::endl;
+			return -1;
+		}
 	}
 
 	std::cout << "[OK]" << std::endl;
@@ -72,7 +80,6 @@ int main(int argc, char *argv[])
 	unsigned long nElements = 0;
 	unsigned long nLeafs = 0;
 	trie.getSize(nElements, nLeafs);
-	//std::cout << "Trie size: " << nElements << ", " << nLeafs << std::endl;
 
 	if (nElements != 8)
 	{
@@ -93,7 +100,6 @@ int main(int argc, char *argv[])
 
 	// Get atlas trie size
 	unsigned long atlasSize = trie.getAtlasSize();
-	//std::cout << "Trie Atlas size: " << atlasSize << std::endl;
 
 	if (atlasSize != 24)
 	{
@@ -133,6 +139,25 @@ int main(int argc, char *argv[])
 	{
 		std::cout << "[ERROR] Error setting the atlas" << std::endl;
 		return -1;
+	}
+
+	// Get elements
+	for (int i = 0; i < nValues; i++)
+	{
+		// Get elements
+		element = (int*)trie.get(names[i]);
+
+		if (element == NULL)
+		{
+			std::cout << "[ERROR] Error getting element" << std::endl;
+			return -1;
+		}
+
+		if (*element != values[i])
+		{
+			std::cout << "[ERROR] Wrong element value" << std::endl;
+			return -1;
+		}
 	}
 
 	// Get atlas again and check
