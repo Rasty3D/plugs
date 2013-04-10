@@ -44,11 +44,10 @@ int main(int argc, char *argv[])
 	trie.print();
 	std::cout << std::endl;
 
-	// Print extended trie
+	// Print trie atlas
 	std::cout << "Atlas: ";
-	unsigned long depth = 0;
-	trie.printAtlas(depth);
-	std::cout << "(-" << depth << ")" << std::endl;
+	trie.printAtlas();
+	std::cout << std::endl;
 
 	// Get trie size
 	unsigned long nElements = 0;
@@ -72,7 +71,7 @@ int main(int argc, char *argv[])
 	unsigned long atlasSize = trie.getAtlasSize();
 	std::cout << "Trie Atlas size: " << atlasSize << std::endl;
 
-	if (atlasSize != 23)
+	if (atlasSize != 24)
 	{
 		std::cerr << "Returned wrong atlas size" << std::endl;
 		return -1;
@@ -80,28 +79,45 @@ int main(int argc, char *argv[])
 
 	// Get atlas
 	char *atlas = new char[atlasSize];
-	unsigned long atlasPos = 0;
-	depth = 0;
-
-	if (!trie.getAtlas(atlas, atlasPos, depth))
+	if (!trie.getAtlas(atlas))
 	{
 		std::cerr << "Error getting the atlas" << std::endl;
 		return -1;
 	}
 
 	std::cout << "Atlas: ";
-	for (int i = 0; i < atlasSize; i++)
+	for (unsigned long i = 0; i < atlasSize; i++)
 	{
 		if (atlas[i] > 16)
-			std::cout << "\'" << atlas[i] << "\', ";
+			std::cout << "'" << atlas[i] << "'";
 		else if (atlas[i] == '\0')
-			std::cout << "NULL, ";
+			std::cout << "NULL";
 		else if (atlas[i] < 0)
-			std::cout << (int)atlas[i] << ", ";
+			std::cout << (int)atlas[i];
 		else
-			std::cout << "ERROR, ";
+			std::cout << "ERROR";
+
+		if (i == atlasSize - 1)
+			std::cout << std::endl;
+		else
+			std::cout << ", ";
 	}
-	std::cout << "(-" << depth << ")" << std::endl;
+
+	// Clean and set atlas
+	trie.clear();
+	void *elements[nValues];
+	for (int i = 0; i < nValues; i++)
+		elements[i] = (void*)&values[i];
+	if (!trie.setAtlas(atlas, atlasSize, elements))
+	{
+		std::cerr << "Error setting the atlas" << std::endl;
+		return -1;
+	}
+
+	// Print trie atlas
+	std::cout << "Atlas: ";
+	trie.printAtlas();
+	std::cout << std::endl;
 
 	// Return ok
 	return 0;

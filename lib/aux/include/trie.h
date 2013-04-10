@@ -100,11 +100,17 @@ public:
 	/** Print tree */
 	void print();
 
-	/** Print tree atlas
-	 * @param [out]	Tree depth for jumps
-	 */
-	void printAtlas(unsigned long &depth);
+	/** Print tree atlas */
+	void printAtlas();
 
+private:
+		/** Print tree atlas
+	 * @param [in]	depth		Tree depth for jumps
+	 * @param [out]	lastJump	Last jump depth
+	 */
+	void printAtlas(unsigned long depth, unsigned long &lastJump);
+
+public:
 	/** Get the size of the tree (number of elements and leafs)
 	 * @param [out]	nElements	Number of elements
 	 * @param [out]	nLeafs		Number of leafs
@@ -116,14 +122,47 @@ public:
 	 */
 	unsigned long getAtlasSize();
 
+private:
+	/** Get atlas size
+	 * @return	Atlas size
+	 */
+	unsigned long getAtlasSizeAux();
+
+public:
 	/** Get atlas
 	 * @param [out]	Buffer with the atlas
-	 * @param [out]	Position in the atlas buffer (will finish with the atlas size)
-	 * @param [out]	Tree depth for jumps
 	 * @return		true if the atlas was generated properly,
 	 * 				false otherwise
 	 */
-	bool getAtlas(char *atlas, unsigned long &pos, unsigned long &depth);
+	bool getAtlas(char *atlas);
+
+private:
+	/** Get atlas
+	 * @param [out]	atlas		Buffer with the atlas
+	 * @param [out]	pos			Position in the atlas buffer (will finish with
+	 * 							the atlas size)
+	 * @param [in]	depth		Tree depth for jumps
+	 * #param [out] lastJump	Last jump depth
+	 * @return					true if the atlas was generated properly,
+	 * 							false otherwise
+	 */
+	bool getAtlas(
+		char *atlas, unsigned long &pos,
+		unsigned long depth, unsigned long &lastJump);
+
+public:
+	/** Set atlas
+	 *
+	 */
+	bool setAtlas(char *atlas, unsigned long atlasSize, void **elements);
+
+private:
+	/** Set atlas
+	 *
+	 */
+	bool setAtlas(
+		char *atlas, unsigned long atlasSize, unsigned long &atlasPos,
+		void **elements, unsigned long &elementPos);
 
 	// @}
 };

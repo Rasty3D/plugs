@@ -244,26 +244,35 @@ void Trie::print()
 		this->next->print();
 }
 
-// Print trie with extended information
-void Trie::printAtlas(unsigned long &depth)
+// Print tree atlas
+void Trie::printAtlas()
 {
-	std::cout << "\'" << this->character << "\', ";
+	unsigned long lastJump = 0;
+	this->printAtlas(0, lastJump);
+	std::cout << "-" << (lastJump + 1);
+}
+
+// Print trie atlas
+void Trie::printAtlas(unsigned long depth, unsigned long &lastJump)
+{
+	std::cout << "'" << this->character << "', ";
 
 	if (this->element != NULL)
 		std::cout << "NULL, ";
 
-	unsigned long depthChild = depth + 1;
+	lastJump = depth;
 
 	if (this->child != NULL)
-		this->child->printAtlas(depthChild);
+		this->child->printAtlas(depth + 1, lastJump);
 
 	if (this->next != NULL)
 	{
-		std::cout << "-" << (depthChild - depth) << ", ";
-		this->next->printAtlas(depth);
+		std::cout << "-" << (lastJump - depth + 1) << ", ";
+		this->next->printAtlas(depth + 1, lastJump);
 	}
 
-	depth = depthChild + 1;
+	if (this->child == NULL && this->next == NULL)
+		lastJump = depth;
 }
 
 
@@ -287,49 +296,131 @@ void Trie::getSize(unsigned long &nElements, unsigned long &nLeafs)
 // Get atlas size
 unsigned long Trie::getAtlasSize()
 {
+	return this->getAtlasSizeAux() + 1;
+}
+
+// Get atlas size
+unsigned long Trie::getAtlasSizeAux()
+{
 	int size = 1;
 
 	if (this->element != NULL)
 		size++;
 
 	if (this->child != NULL)
-		size += this->child->getAtlasSize();
+		size += this->child->getAtlasSizeAux();
 
 	if (this->next != NULL)
-		size += this->next->getAtlasSize() + 1;
+		size += this->next->getAtlasSizeAux() + 1;
 
 	return size;
 }
 
 // Get atlas
-bool Trie::getAtlas(char *atlas, unsigned long &pos, unsigned long &depth)
+bool Trie::getAtlas(char *atlas)
+{
+	unsigned long pos = 0;
+	unsigned long lastJump = 0;
+
+	if (!this->getAtlas(atlas, pos, 0, lastJump))
+		return false;
+
+	if (lastJump > 254)
+		return false;
+
+	atlas[pos] = -(lastJump + 1);
+	return true;
+}
+
+// Get atlas
+bool Trie::getAtlas(
+	char *atlas, unsigned long &pos,
+	unsigned long depth, unsigned long &lastJump)
 {
 	atlas[pos++] = this->character;
 
 	if (this->element != NULL)
 		atlas[pos++] = '\0';
 
-	unsigned long depthChild = depth + 1;
+	lastJump = depth;
 
 	if (this->child != NULL)
 	{
-		if (!this->child->getAtlas(atlas, pos, depthChild))
+		if (!this->child->getAtlas(atlas, pos, depth + 1, lastJump))
 			return false;
 	}
 
 	if (this->next != NULL)
 	{
-		unsigned long jump = depthChild - depth;
+		unsigned long jump = lastJump - depth + 1;
 
 		if (jump >= 255)
 			return false;
 
 		atlas[pos++] = -jump;
 
-		if (!this->next->getAtlas(atlas, pos, depth))
+		if (!this->next->getAtlas(atlas, pos, depth + 1, lastJump))
 			return false;
 	}
 
-	depth = depthChild + 1;
+	if (this->child == NULL && this->next == NULL)
+		lastJump = depth;
+
 	return true;
+}
+
+// Set atlas
+bool Trie::setAtlas(char *atlas, unsigned long atlasSize, void **elements)
+{
+	if (atlas[0] <= 0)
+		return false;
+
+	this->character = atlas[0];
+
+	unsigned long atlasPos = 1;
+	unsigned long elementPos = 0;
+	return this->setAtlas(atlas, atlasSize, atlasPos, elements, elementPos);
+}
+
+// Set atlas
+bool Trie::setAtlas(
+	char *atlas, unsigned long atlasSize, unsigned long &atlasPos,
+	void **elements, unsigned long &elementPos)
+{
+	if (atlasPos == atlasSize)
+		return true;
+
+	if (atlas[atlasPos] > 0)
+	{
+		this->child = new Trie;
+		this->child->character = atlas[atlasPos++];
+		if (!this->child->setAtlas(
+				atlas, atlasSize, atlasPos, elements, elementPos))
+			return false;
+	}
+	else if (atlas[atlasPos] == 0)
+	{
+		this->element = elements[elementPos++];
+		atlasPos++;
+	}
+	else if (atlas[atlasPos] == -1)
+	{
+		atlasPos++;
+
+		if (atlasPos == atlasSize)
+			return true;
+
+		this->next = new Trie;
+		this->next->character = atlas[atlasPos++];
+		if (!this->next->setAtlas(
+				atlas, atlasSize, atlasPos, elements, elementPos))
+			return false;
+	}
+	else // if (atlas[atlasPos] < -1)
+	{
+		atlas[atlasPos]++;
+		return true;
+	}
+
+	return this->setAtlas(atlas, atlasSize, atlasPos, elements, elementPos);
 }
