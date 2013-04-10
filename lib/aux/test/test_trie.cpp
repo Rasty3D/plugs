@@ -1,10 +1,16 @@
 #include <iostream>
+#include <string.h>
 #include "trie.h"
 
 int main(int argc, char *argv[])
 {
+	std::cout << "==== START ====" << std::endl;
+
 	// Trie
 	Trie trie;
+
+
+	std::cout << "==== ADD ELEMENTS ... ";
 
 	// Add elements
 	const int nValues = 8;
@@ -17,27 +23,37 @@ int main(int argc, char *argv[])
 	{
 		if (!trie.add(names[i], (void*)&values[i], true))
 		{
-			std::cerr << "Error adding [" << names[i] << "]" << std::endl;
+			std::cout << "[ERROR] Error adding [" << names[i] << "]" << std::endl;
 			return -1;
 		}
 	}
+
+	std::cout << "[OK]" << std::endl;
+
+
+	std::cout << "==== GET ELEMENT ... ";
 
 	// Get element
 	int *element = (int*)trie.get("ted");
 
 	if (element == NULL)
 	{
-		std::cerr << "Error getting element" << std::endl;
+		std::cout << "[ERROR] Error getting element" << std::endl;
 		return -1;
 	}
 
-	std::cout << "Value of element 'ted': " << (int)*element << std::endl;
+	//std::cout << "Value of element 'ted': " << (int)*element << std::endl;
 
 	if (*element != 4)
 	{
-		std::cerr << "Wrong element value" << std::endl;
+		std::cout << "[ERROR] Wrong element value" << std::endl;
 		return -1;
 	}
+
+	std::cout << "[OK]" << std::endl;
+
+
+	std::cout << "==== PRINT TRIE ====" << std::endl;
 
 	// Print trie
 	std::cout << "Trie: ";
@@ -49,31 +65,39 @@ int main(int argc, char *argv[])
 	trie.printAtlas();
 	std::cout << std::endl;
 
+
+	std::cout << "==== GET TRIE SIZE ... ";
+
 	// Get trie size
 	unsigned long nElements = 0;
 	unsigned long nLeafs = 0;
 	trie.getSize(nElements, nLeafs);
-	std::cout << "Trie size: " << nElements << ", " << nLeafs << std::endl;
+	//std::cout << "Trie size: " << nElements << ", " << nLeafs << std::endl;
 
 	if (nElements != 8)
 	{
-		std::cerr << "Returned wrong number of elements" << std::endl;
+		std::cout << "[ERROR] Returned wrong number of elements" << std::endl;
 		return -1;
 	}
 
 	if (nLeafs != 10)
 	{
-		std::cerr << "Returned wrong number of leafs" << std::endl;
+		std::cout << "[ERROR] Returned wrong number of leafs" << std::endl;
 		return -1;
 	}
 
+	std::cout << "[OK]" << std::endl;
+
+
+	std::cout << "==== GET TRIE ATLAS ... ";
+
 	// Get atlas trie size
 	unsigned long atlasSize = trie.getAtlasSize();
-	std::cout << "Trie Atlas size: " << atlasSize << std::endl;
+	//std::cout << "Trie Atlas size: " << atlasSize << std::endl;
 
 	if (atlasSize != 24)
 	{
-		std::cerr << "Returned wrong atlas size" << std::endl;
+		std::cout << "[ERROR] Returned wrong atlas size" << std::endl;
 		return -1;
 	}
 
@@ -81,27 +105,24 @@ int main(int argc, char *argv[])
 	char *atlas = new char[atlasSize];
 	if (!trie.getAtlas(atlas))
 	{
-		std::cerr << "Error getting the atlas" << std::endl;
+		std::cout << "[ERROR] Error getting the atlas" << std::endl;
 		return -1;
 	}
 
-	std::cout << "Atlas: ";
-	for (unsigned long i = 0; i < atlasSize; i++)
-	{
-		if (atlas[i] > 16)
-			std::cout << "'" << atlas[i] << "'";
-		else if (atlas[i] == '\0')
-			std::cout << "NULL";
-		else if (atlas[i] < 0)
-			std::cout << (int)atlas[i];
-		else
-			std::cout << "ERROR";
+	char atlasCheck[24] = {
+		't', 'o', NULL, -1, 'e', 'a', NULL, -1, 'd', NULL, -1, 'n', NULL, -6,
+		'a', NULL, -1, 'i', NULL, 'n', NULL, 'n', NULL, -5};
 
-		if (i == atlasSize - 1)
-			std::cout << std::endl;
-		else
-			std::cout << ", ";
+	if (memcmp(atlas, atlasCheck, 24) != 0)
+	{
+		std::cout << "[ERROR] The atlas is wrong" << std::endl;
+		return -1;
 	}
+
+	std::cout << "[OK]" << std::endl;
+
+
+	std::cout << "==== SET TRIE ATLAS ... ";
 
 	// Clean and set atlas
 	trie.clear();
@@ -110,14 +131,32 @@ int main(int argc, char *argv[])
 		elements[i] = (void*)&values[i];
 	if (!trie.setAtlas(atlas, atlasSize, elements))
 	{
-		std::cerr << "Error setting the atlas" << std::endl;
+		std::cout << "[ERROR] Error setting the atlas" << std::endl;
 		return -1;
 	}
 
-	// Print trie atlas
-	std::cout << "Atlas: ";
-	trie.printAtlas();
-	std::cout << std::endl;
+	// Get atlas again and check
+	atlasSize = trie.getAtlasSize();
+	if (atlasSize != 24)
+	{
+		std::cout << "[ERROR] Returned wrong atlas size" << std::endl;
+		return -1;
+	}
+	if (!trie.getAtlas(atlas))
+	{
+		std::cout << "[ERROR] Error getting the atlas" << std::endl;
+		return -1;
+	}
+	if (memcmp(atlas, atlasCheck, 24) != 0)
+	{
+		std::cout << "[ERROR] The atlas is wrong" << std::endl;
+		return -1;
+	}
+
+	std::cout << "[OK]" << std::endl;
+
+
+	std::cout << "==== FINISH ====" << std::endl;
 
 	// Return ok
 	return 0;
