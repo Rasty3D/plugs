@@ -111,43 +111,43 @@ private:
 	void printAtlas(unsigned long depth, unsigned long &lastJump);
 
 public:
-	/** Get the size of the tree (number of elements and leafs)
-	 * @param [out]	nElements	Number of elements
+	/** Get the size of the atlas and number of elements
+	 * @param [out]	atlasSize	Size of the atlas
 	 * @param [out]	nLeafs		Number of leafs
 	 */
-	void getSize(unsigned long &nElements, unsigned long &nLeafs);
-
-	/** Get atlas size
-	 * @return	Atlas size
-	 */
-	unsigned long getAtlasSize();
+	void getAtlasSize(unsigned long &atlasSize, unsigned long &nElements);
 
 private:
-	/** Get atlas size
-	 * @return	Atlas size
+	/** Get the size of the atlas and number of elements
+	 * @param [out]	atlasSize	Size of the atlas
+	 * @param [out]	nLeafs		Number of leafs
 	 */
-	unsigned long getAtlasSizeAux();
+	void getAtlasSizeAux(unsigned long &atlasSize, unsigned long &nElements);
 
 public:
 	/** Get atlas
-	 * @param [out]	Buffer with the atlas
-	 * @return		true if the atlas was generated properly,
-	 * 				false otherwise
+	 * @param [out]	atlas		Buffer with the atlas
+	 * @param [out]	elements	Pointer to the elements
+	 * @return					true if the atlas was generated properly,
+	 * 							false otherwise
 	 */
-	bool getAtlas(char *atlas);
+	bool getAtlas(char *atlas, void **elements);
 
 private:
 	/** Get atlas
 	 * @param [out]	atlas		Buffer with the atlas
-	 * @param [out]	pos			Position in the atlas buffer (will finish with
+	 * @param [out]	atlasPos	Position in the atlas buffer (will finish with
 	 * 							the atlas size)
+	 * @param [out]	elements	Pointer to the elements
+	 * @param [out] elementPos	Position fo the element list
 	 * @param [in]	depth		Tree depth for jumps
 	 * #param [out] lastJump	Last jump depth
 	 * @return					true if the atlas was generated properly,
 	 * 							false otherwise
 	 */
 	bool getAtlas(
-		char *atlas, unsigned long &pos,
+		char *atlas, unsigned long &atlasPos,
+		void **elements, unsigned long &elementPos,
 		unsigned long depth, unsigned long &lastJump);
 
 public:

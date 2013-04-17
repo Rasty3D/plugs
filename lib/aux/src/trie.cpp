@@ -278,75 +278,73 @@ void Trie::printAtlas(unsigned long depth, unsigned long &lastJump)
 
 	/* Other functions */
 
-// Get the size of the tree (number of elements and leafs)
-void Trie::getSize(unsigned long &nElements, unsigned long &nLeafs)
+// Get the size of the atlas and number of elements
+void Trie::getAtlasSize(unsigned long &atlasSize, unsigned long &nElements)
 {
+	atlasSize = 0;
+	nElements = 0;
+	this->getAtlasSizeAux(atlasSize, nElements);
+	atlasSize++;
+}
+
+// Get the size of the atlas and number of elements
+void Trie::getAtlasSizeAux(unsigned long &atlasSize, unsigned long &nElements)
+{
+	atlasSize++;
+
 	if (this->element != NULL)
+	{
 		nElements++;
-
-	nLeafs++;
-
-	if (this->child != NULL)
-		this->child->getSize(nElements, nLeafs);
-
-	if (this->next != NULL)
-		this->next->getSize(nElements, nLeafs);
-}
-
-// Get atlas size
-unsigned long Trie::getAtlasSize()
-{
-	return this->getAtlasSizeAux() + 1;
-}
-
-// Get atlas size
-unsigned long Trie::getAtlasSizeAux()
-{
-	int size = 1;
-
-	if (this->element != NULL)
-		size++;
+		atlasSize++;
+	}
 
 	if (this->child != NULL)
-		size += this->child->getAtlasSizeAux();
+		this->child->getAtlasSizeAux(atlasSize, nElements);
 
 	if (this->next != NULL)
-		size += this->next->getAtlasSizeAux() + 1;
-
-	return size;
+	{
+		this->next->getAtlasSizeAux(atlasSize, nElements);
+		atlasSize++;
+	}
 }
 
 // Get atlas
-bool Trie::getAtlas(char *atlas)
+bool Trie::getAtlas(char *atlas, void **elements)
 {
-	unsigned long pos = 0;
+	unsigned long atlasPos = 0;
+	unsigned long elementPos = 0;
 	unsigned long lastJump = 0;
 
-	if (!this->getAtlas(atlas, pos, 0, lastJump))
+	if (!this->getAtlas(atlas, atlasPos, elements, elementPos, 0, lastJump))
 		return false;
 
 	if (lastJump > 254)
 		return false;
 
-	atlas[pos] = -(lastJump + 1);
+	atlas[atlasPos] = -(lastJump + 1);
 	return true;
 }
 
 // Get atlas
 bool Trie::getAtlas(
-	char *atlas, unsigned long &pos,
+	char *atlas, unsigned long &atlasPos,
+	void **elements, unsigned long &elementPos,
 	unsigned long depth, unsigned long &lastJump)
 {
-	atlas[pos++] = this->character;
+	atlas[atlasPos++] = this->character;
 
 	if (this->element != NULL)
-		atlas[pos++] = '\0';
+	{
+		atlas[atlasPos++] = '\0';
+		elements[elementPos++] = this->element;
+	}
 
 	lastJump = depth;
 
 	if (this->child != NULL)
 	{
-		if (!this->child->getAtlas(atlas, pos, depth + 1, lastJump))
+		if (!this->child->getAtlas(
+				atlas, atlasPos, elements, elementPos, depth + 1, lastJump))
 			return false;
 	}
 
@@ -357,9 +355,10 @@ bool Trie::getAtlas(
 		if (jump >= 255)
 			return false;
 
-		atlas[pos++] = -jump;
+		atlas[atlasPos++] = -jump;
 
-		if (!this->next->getAtlas(atlas, pos, depth + 1, lastJump))
+		if (!this->next->getAtlas(
+				atlas, atlasPos, elements, elementPos, depth + 1, lastJump))
 			return false;
 	}
 
