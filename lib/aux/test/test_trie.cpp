@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[])
 {
-	std::cout << "==== START ====" << std::endl;
+	std::cout << "**** START ****" << std::endl;
 
 	// Trie
 	Trie trie;
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 	std::cout << "[OK]" << std::endl;
 
 
-	std::cout << "==== PRINT TRIE ====" << std::endl;
+	std::cout << "<<<< PRINT TRIE >>>>" << std::endl;
 
 	// Print trie
 	std::cout << "Trie: ";
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
 	std::cout << "[OK]" << std::endl;
 
 
-	std::cout << "==== FINISH ====" << std::endl;
+	std::cout << "**** FINISH ****" << std::endl;
 
 	// Return ok
 	return 0;

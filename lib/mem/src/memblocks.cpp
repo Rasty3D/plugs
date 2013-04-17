@@ -154,13 +154,6 @@ bool MemBlocks::allocate(int owner, bool reset)
 	if (reset)
 		memset(this->buffer, 0, this->bufferSize, owner);
 
-	// Generate memory atlas
-	if (!this->genMemAtlas())
-	{
-		this->clear();
-		return false;
-	}
-
 	return true;
 }
 
@@ -195,29 +188,111 @@ bool MemBlocks::clear()
 
 	/* Memory Atlas management functions */
 
+// Gets the memory atlas size
+unsigned long MemBlocks::getMemAtlasSize()
+{
+	return this->atlasSize;
+}
+
 // Gets the memory atlas
-unsigned char *MemBlocks::getMemAtlas(unsigned long &size)
+bool MemBlocks::getMemAtlas(unsigned char *atlas)
 {
 	if (this->atlasSize == 0 || this->atlas == NULL)
-	{
-		size = 0;
-		return NULL;
-	}
+		return false;
 
-	size = this->atlasSize;
-	return this->atlas;
+	memcpy(atlas, this->atlas, this->atlasSize);
+	return true;
 }
 
 // Loads a memory atlas
-bool MemBlocks::loadMemAtlas(unsigned char *buffer, unsigned long size)
+bool MemBlocks::loadMemAtlas(unsigned char *atlas, unsigned long size)
 {
-	// TODO
-	return false;
+	// Clean everything
+	this->clear();
+
+	// Variables
+	MemBlock memBlock;
+	unsigned long nElements;
+	unsigned long atlasOffset;
+	void **elements;
+
+	// Get number of elements
+	memcpy(&nElements, atlas, sizeof(unsigned long));
+
+	if (size < (nElements + 1) * sizeof(unsigned long))
+		return false;
+
+	elements = new void*[nElements];
+	atlasOffset = sizeof(unsigned long) + nElements * sizeof(MemBlock);
+
+	// Read blocks
+	for (unsigned long i = 0; i < nElements; i++)
+	{
+		memcpy(
+			&memBlock,
+			&atlas[(i * 3 + 1) * sizeof(unsigned long)],
+			sizeof(MemBlock));
+		this->blocks.push_back(memBlock);
+		elements[i] = &this->blocks.back();
+	}
+
+	// Build trie with the atlas
+	if (!this->trie.setAtlas(
+			(char*)&atlas[atlasOffset], size - atlasOffset, elements))
+	{
+		delete [] elements;
+		this->clear();
+		return false;
+	}
+
+	// Delete temporal things
+	delete [] elements;
+
+	// Return ok
+	return true;
 }
 
 // Generates the memory atlas
 bool MemBlocks::genMemAtlas()
 {
-	// TODO
-	return false;
+	// Variables
+	unsigned long atlasSize;
+	unsigned long nElements;
+	unsigned long atlasOffset;
+	void **elements;
+
+	// Get atlas size
+	this->trie.getAtlasSize(atlasSize, nElements);
+
+	// Set atlas size
+	atlasOffset = sizeof(unsigned long) + nElements * sizeof(MemBlock);
+	this->atlasSize = atlasOffset + atlasSize;
+	this->atlas = new unsigned char[this->atlasSize];
+
+	// Get atlas
+	elements = new void*[nElements];
+
+	if (!this->trie.getAtlas((char*)&this->atlas[atlasOffset], elements))
+	{
+		delete [] elements;
+		delete [] this->atlas;
+		this->atlasSize = 0;
+		return false;
+	}
+
+	// Write blocks
+	memcpy(&this->atlas[0], &nElements, sizeof(unsigned long));
+
+	for (unsigned long i = 0; i < nElements; i++)
+	{
+		memcpy(
+			&this->atlas[(i * 3 + 1) * sizeof(unsigned long)],
+			elements[i], sizeof(MemBlock));
+	}
+
+	// Delete temporal things
+	delete [] elements;
+
+	// Return ok
+	return true;
 }

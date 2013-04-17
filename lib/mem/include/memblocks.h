@@ -121,7 +121,7 @@ public:
 	unsigned long getBlockSize(const char *name);
 
 	/** Get the owner of the data
-	 *  @return				-1 if the data is not initialized
+	 *  @return				-2 if the data is not initialized
 	 */
 	int getOwner();
 
@@ -149,25 +149,25 @@ public:
 public:
 	// @{
 
-	/** Gets the memory atlas. If it's not already generated, generates
-	 *  a new one
-	 *  @param [out]	size	Size of the memory atlas. If this value is
-	 *  						zero, means that the atlas could not be
-	 *  						generated
-	 *  @return					Pointer to the memory atlas. If this value is
-	 *  						NULL, means that the atlas could not be
-	 *  						generated
+	/** Gets the memory atlas size
+	 *  @return		Memory atlas size
 	 */
-	unsigned char *getMemAtlas(unsigned long &size);
+	unsigned long getMemAtlasSize();
+
+	/** Gets the memory atlas
+	 *  @param [out] atlas		Buffer to store the atlas
+	 *  @return					true if the size is enough,
+	 *  						false otherwise
+	 */
+	bool getMemAtlas(unsigned char *atlas);
 
 	/** Loads a memory atlas
-	 *  @param [in]	buffer	Buffer containing the memory atlas
+	 *  @param [in]	atlas	Buffer containing the memory atlas
 	 *  @param [in] size	Size of the memory atlas buffer
 	 *  @return				true if ok, false otherwise
 	 */
-	bool loadMemAtlas(unsigned char *buffer, unsigned long size);
+	bool loadMemAtlas(unsigned char *atlas, unsigned long size);
 
-private:
 	/** Generates the memory atlas
 	 *  @return				true if ok, false otherwise
 	 */
