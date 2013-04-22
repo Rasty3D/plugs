@@ -29,17 +29,14 @@ int main(int argc, char *argv[])
 	filebufErr.open("test.txt", std::ios::out);
 	context.cerr = new std::ostream(&filebufErr);*/
 
+	/*
 	std::stringbuf bufErr;
-	context.cerr = new std::ostream(&bufErr);
+	context.cerr = new std::ostream(&bufErr);*/
 
 	NuxPlugin plugin(&context);
 
 	if (!plugin.load("test"))
 	{
-		std::cout << bufErr.str();
-		bufErr.str("");
-		*context.cerr << "Hello";
-		std::cout << bufErr.str() << std::endl;;
 		return -1;
 	}
 
